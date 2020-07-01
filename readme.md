@@ -233,20 +233,3 @@ http.createServer((request, response) => {
 * `http://localhost:3000/about` 요청 : `static/about.html` 응답
 * `http://localhost:3000/portfolio` 요청 : `static/portfolio.html` 응답
 * `http://localhost:3000/contact` 요청 : `static/contact.html` 응답
-
-## 쥐돌이의 갑작스런 업데이트
-
-``` javascript
-function pathnameParser() {
-  const arr = pathname.split('/')
-  let pathnameParse = ''
-  
-  for( let i = 1; i < arr.length; i++ ){
-    pathnameParse += `/${arr[i]}`
-  }
-
-  pathnameParse += '.html'
-
-  return pathnameParse;
-}
-```
