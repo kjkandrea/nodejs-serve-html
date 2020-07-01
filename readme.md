@@ -80,3 +80,42 @@ home.html을 응답해주긴 위해서는 해당 파일을 읽어들여 내용�
 이때 사용되는 모듈이 `fs`이며 해당 모듈내에 `readFile` 메서드를 사용한다. 
 `readFile`을 이용하여 다음과 같이 업데이트 하여보자.
 
+``` javascript
+const http = require('http');
+const fs = require('fs');
+const url = require('url');
+
+http.createServer((request, response) => {
+  const pathname = url.parse(request.url, true).pathname;
+
+  if(pathname === '/'){
+    fs.readFile(__dirname + '/static/home.html', (error, data) => {
+      response.end(data);
+    });
+  }
+}).listen(3000);
+```
+
+실행 후 요청을 보내보면 `static/home.html` 이 root에 표시되는 걸 볼 수 있다.
+두가지 처리를 더 해주자.
+
+* 성공 시 응답 상태 코드 200 보내주기
+* 에러 발생시 에러 예외 처리
+
+``` javascript
+const http = require('http');
+const fs = require('fs');
+const url = require('url');
+
+http.createServer((request, response) => {
+  const pathname = url.parse(request.url, true).pathname;
+
+  if(pathname === '/'){
+    response.writeHead( 200, {'Content-Type':'text/html'});
+    fs.readFile(__dirname + '/static/home.html', (error, data) => {
+      if (error) throw error; // 에러 발생시 에러 기록하고 종료
+      response.end(data, 'utf-8'); // 브라우저로 전송
+    });
+  }
+}).listen(3000);
+```
