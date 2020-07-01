@@ -233,3 +233,57 @@ http.createServer((request, response) => {
 * `http://localhost:3000/about` 요청 : `static/about.html` 응답
 * `http://localhost:3000/portfolio` 요청 : `static/portfolio.html` 응답
 * `http://localhost:3000/contact` 요청 : `static/contact.html` 응답
+
+## 쥐돌이의 갑작스런 업데이트
+
+쥐돌이에게 작업이 완료된 것 같다고 알려주려던 중, 쥐돌이가 갑작스러운 소식을 전해왔다.
+쥐돌이가 그 새 portfolio 페이지에 올릴 포트폴리오 3개를 준비했으며 구조가 다음과 같이 추가되었다는 소식이였다!
+
+```
+static/
+--/ portpolio/
+----/ 1.html
+----/ 2.html
+----/ 3.html
+--/ home.html
+--/ about.html
+--/ portfolio.html
+--/ contact.html
+main.js
+```
+
+뿐만아니라 네비게이션과 `portfolio.html`이 다음과 같이 업데이트가 되었다.
+
+**네비게이션**
+
+``` html
+<nav>
+  <ul>
+    <li><a href="/">home</a></li>
+    <li><a href="/about">about</a></li>
+    <li><a href="/portfolio">portfolio</a>
+      <ul>
+        <li><a href="/portfolio/1.html">첫 번째</a></li>
+        <li><a href="/portfolio/2.html">두 번째</a></li>
+        <li><a href="/portfolio/3.html">세 번째</a></li>
+      </ul>
+    </li>
+    <li><a href="/contact">contact</a></li>
+  </ul>
+</nav>
+```
+
+**portfolio.html의 콘텐츠 영역**
+
+``` html
+<main>
+  <h2>Portfolio</h2>
+  <p>저의 멋진 세 가지 포트폴리오를 소개합니다!</p>
+
+  <ul>
+    <li><a href="/portfolio/1.html">첫 번째</a></li>
+    <li><a href="/portfolio/2.html">두 번째</a></li>
+    <li><a href="/portfolio/3.html">세 번째</a></li>
+  </ul>
+</main>
+```
