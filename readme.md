@@ -73,3 +73,10 @@ http.createServer((request, response) => {
 http://localhost:3000/ 으로 접근하면 이제 'is Home' 텍스트가 표기된다.
 
 `pathname`으로 홈페이지를 멋지게 분기했으니 이제 'is Home' 텍스트가 아닌 HTML을 응답해보자.
+
+### home.html 내용 응답하기
+
+home.html을 응답해주긴 위해서는 해당 파일을 읽어들여 내용을 응답해주어야 할것이다.
+이때 사용되는 모듈이 `fs`이며 해당 모듈내에 `readFile` 메서드를 사용한다. 
+`readFile`을 이용하여 다음과 같이 업데이트 하여보자.
+
