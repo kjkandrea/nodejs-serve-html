@@ -291,3 +291,76 @@ main.js
 당연하게도 portfolio의 하위 페이지 url로 접근하면 모두 제대로 된 응답을 보내주지 않았다.
 
 어떻게 해야할까?
+
+## 쥐돌이의 갑작스러운 업데이트 대응하기
+
+당신은 기막힌 아이디어가 떠올랐다. 그 아이디어는 `pathnameParser()` 함수를 다음과 같이 수정하는 것이였다.
+
+``` javascript
+function pathnameParser() {
+  const arr = pathname.split('/')
+  let pathnameParse = ''
+  
+  for( let i = 1; i < arr.length; i++ ){
+    pathnameParse += `/${arr[i]}`
+  }
+
+  pathnameParse += '.html'
+
+  return pathnameParse;
+}
+``` 
+
+이렇게 `pathnameParser()` 함수를 수정하니 쥐돌이가 갑작스럽게 2depth 콘텐츠를 추가한 업데이트에 대응 할 수 있었다.
+
+전체 코드는 다음과 같다.
+
+``` javascript
+const http = require('http');
+const fs = require('fs');
+const url = require('url');
+
+http.createServer((request, response) => {
+  const pathname = url.parse(request.url, true).pathname;
+
+  if (request.method === 'GET') {
+    if(pathname === '/'){
+      response.writeHead( 200, {'Content-Type':'text/html'});
+      fs.readFile(__dirname + '/static/home.html', (error, data) => {
+        if (error) console.error(error); // 에러 발생시 에러 기록하고 종료
+        response.end(data, 'utf-8'); // 브라우저로 전송
+      });
+    }else if(pathname){
+      function pathnameParser() {
+        const arr = pathname.split('/')
+        let pathnameParse = ''
+        
+        for( let i = 1; i < arr.length; i++ ){
+          pathnameParse += `/${arr[i]}`
+        }
+      
+        pathnameParse += '.html'
+      
+        return pathnameParse;
+      }
+
+      fs.readFile(__dirname + `/static/${pathnameParser()}`, (error, data) => {
+        if (error) {
+          console.log(error)
+          response.writeHead(404);
+          response.end('Not Found')
+        }
+        response.writeHead( 200, {'Content-Type':'text/html'});
+        response.end(data, 'utf-8'); // 브라우저로 전송
+      });
+      console.log('pathnameParser : ',pathnameParser())
+    }else {
+      response.writeHead(404);
+      response.end('Not Found')
+    }
+  }
+}).listen(3000);
+```
+
+모든 페이지가 응답에 따라 정상적으로 라우팅되었으며 앞으로 쥐돌이가 2depth 이상의 페이지를 추가하더라도 대응이 될 것이다.
+당신은 node.js를 배운지 몇 일 만에 node.js를 활용하여 쥐돌이를 행복하게 만들어줬다.

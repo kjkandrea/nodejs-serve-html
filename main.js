@@ -15,8 +15,14 @@ http.createServer((request, response) => {
     }else if(pathname){
       function pathnameParser() {
         const arr = pathname.split('/')
-        let pathnameParse = `${arr[1]}.html`
-
+        let pathnameParse = ''
+        
+        for( let i = 1; i < arr.length; i++ ){
+          pathnameParse += `/${arr[i]}`
+        }
+      
+        pathnameParse += '.html'
+      
         return pathnameParse;
       }
 
