@@ -15,7 +15,7 @@ main.js
 
 쥐돌이는 node.js서버에 자신의 포트폴리오를 호스팅 하고싶다. 쥐돌이를 도와 `main.js`에 **nodejs로 서버를 생성하여 웹 어플리케이션을 만들어주자.**
 
-## 1. Home 표시하기
+## Home 표시하기
 
 ### path 분석하기
 
@@ -119,3 +119,117 @@ http.createServer((request, response) => {
   }
 }).listen(3000);
 ```
+
+## 서브페이지 표시하기
+
+쥐돌이의 포트폴리오에는 모든페이지에 공통적으로 다음과 같은 네비게이션이 있다.
+
+``` html
+<nav>
+  <ul>
+    <li><a href="/">home</a></li>
+    <li><a href="./about">about</a></li>
+    <li><a href="./portfolio">portfolio</a></li>
+    <li><a href="./contact">contact</a></li>
+  </ul>
+</nav>
+```
+
+해당 네비게이션을 눌렀을 경우나, url로 접근할 경우 그에맞는 html을 응답해주어야 한다.
+
+
+``` javascript
+const http = require('http');
+const fs = require('fs');
+const url = require('url');
+
+http.createServer((request, response) => {
+  const pathname = url.parse(request.url, true).pathname;
+
+  if(pathname === '/'){
+    ... // 생략
+  }else if(pathname){
+    // Do something
+  }
+}).listen(3000);
+```
+
+`pathname` 이 존재할 경우 `// Do something` 에서 서브페이지의 .html을 readFile 메서드로 처리하는 코드를 작성해보자.
+
+### 동적으로 서브페이지 html 가져오기
+
+`pathname`을 가공하여 리턴하는 `pathnameParser()` 함수를 생성하여 접근한 URL 에 따라 readFile을 가져오도록 하였다. 다음과 같이 구성하여 about, portpolio, contact에 접근하였을 경우 해당 파일이 있으면 응답해줄 수 있다!
+
+``` javascript
+... // 생략
+
+http.createServer((request, response) => {
+  const pathname = url.parse(request.url, true).pathname;
+
+  if(pathname === '/'){
+    ... // 생략
+  }else if(pathname){
+    function pathnameParser() {
+      const arr = pathname.split('/')
+      let pathnameParse = `${arr[1]}.html`
+
+      return pathnameParse;
+    }
+
+    fs.readFile(__dirname + `/static/${pathnameParser()}`, (error, data) => {
+      if (error) {
+        console.log(error)
+      }
+      response.writeHead( 200, {'Content-Type':'text/html'});
+      response.end(data, 'utf-8'); // 브라우저로 전송
+    });
+  }
+}).listen(3000);
+```
+
+### 예외 처리
+
+추가로 파일이 없거나 잘못된 요청을 보냈을때는 'Not Found' 를 표시해주기로 하였다. 
+다음과 같이 404에러를 처리하였다.
+
+``` javascript
+... // 생략
+
+http.createServer((request, response) => {
+  const pathname = url.parse(request.url, true).pathname;
+
+  if(pathname === '/'){
+    ... // 생략
+  }else if(pathname){
+    function pathnameParser() {
+      const arr = pathname.split('/')
+      let pathnameParse = `${arr[1]}.html`
+
+      return pathnameParse;
+    }
+
+    fs.readFile(__dirname + `/static/${pathnameParser()}`, (error, data) => {
+      if (error) {
+        console.error(error)
+        response.writeHead(404);
+        response.end('Not Found')
+      }
+      response.writeHead( 200, {'Content-Type':'text/html'});
+      response.end(data, 'utf-8'); // 브라우저로 전송
+    });
+  }else {
+    response.writeHead(404);
+    response.end('Not Found')
+  }
+}).listen(3000);
+```
+
+### 지금까지 한 것
+
+에러처리를 하고 실행하면 모든 페이지 요청에 정상적으로 응답하는 것으로 보인다.
+지금까지의 결과를 살펴보면 다음과 같다.
+
+* `http://localhost:3000` 요청 : `static/home.html` 응답
+* `http://localhost:3000/about` 요청 : `static/about.html` 응답
+* `http://localhost:3000/portfolio` 요청 : `static/portfolio.html` 응답
+* `http://localhost:3000/contact` 요청 : `static/contact.html` 응답
